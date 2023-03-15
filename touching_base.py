@@ -45,7 +45,10 @@ def topologiesByIFCFile(ifc_file, transferDictionaries=True):
         i = 0
         text="Converting to Topologies"
         conv_bar = st.progress(0, text=text)
-        for i, product in enumerate(products):
+        if len(products) > 500:
+            st.write("WARNING, can only convert a maximum of 500 IFC products")
+            products = products[:500]
+        for i, product in enumerate(products[:500]):
             conv_bar.progress(int(float(i)/float(len(products))*100.0), text=text)
             try:
                 shape = ifcopenshell.geom.create_shape(settings, product)
