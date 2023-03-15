@@ -141,7 +141,7 @@ if ifc_file:
         condition = "Unknown"
         options = []
         for i in range(len(topologies)):
-            t_d = Topology.Dictionary(newTopologies[i])
+            t_d = Topology.Dictionary(topologies[i])
             t_name = Dictionary.ValueAtKey(t_d,"IFC_name")
             t_id = Dictionary.ValueAtKey(t_d,"IFC_id")
             options.append(t_name)
