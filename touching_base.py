@@ -82,7 +82,6 @@ if ifc_file:
     topologies = topologiesByIFCFile(ifc_file, transferDictionaries=True)
     newTopologies = []
     for i, topology in enumerate(topologies):
-        st.progress(i, "Transferring Information from IFC to topologicpy")
         d = Topology.Dictionary(topology)
         newTopology = Topology.SelfMerge(topology)
         if not isinstance(newTopology, topologic.Cell):
@@ -110,10 +109,9 @@ if ifc_file:
     for topology in newTopologies:
         bbList.append(Topology.BoundingBox(topology))
     counter = 1
-    csv = ""
-
+    csv = []
+    condition = "Unknown"
     for i in range(len(newTopologies)):
-        st.progress(i, "Detecting Adjacenies")
         t_d = Topology.Dictionary(newTopologies[i])
         t_name = Dictionary.ValueAtKey(t_d,"IFC_name")
         for j in range(len(newTopologies)):
@@ -124,18 +122,17 @@ if ifc_file:
                 if isinstance(temp, topologic.CellComplex):
                     temp = Topology.Boolean(newTopologies[i], newTopologies[j], operation="merge")
                     if isinstance(temp, topologic.CellComplex):
-                        condition = "unknown"
                         temp_cells = Topology.Cells(temp)
                         if len(temp_cells) == 2:
                             condition = "touching"
                         elif len(temp_cells) > 2:
                             condition = "overlapping"
-                        csv = csv + str(counter)+","+t_name+","+k_name+","+condition+"\n"
                     else:
-                        csv = csv + str(counter)+","+t_name+","+k_name+",separated"+"\n"
+                        condition = "separated"
                 else:
-                    csv = csv + str(counter)+","+t_name+","+k_name+",separated"+"\n"
+                    condition = "separated"
+                csv.append[str(counter),t_name,k_name,condition]
                 counter = counter + 1
                 used[i][j] = 1
                 used[j][i] = 1
-    st.write(csv)
+    st.dataframe(data=csv)
