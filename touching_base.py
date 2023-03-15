@@ -162,7 +162,10 @@ if ifc_file:
         csv = []
         condition = "Unknown"
         options = []
+        text="Clash Detection"
+        clash_bar = st.progress(2, text=text)
         for i in range(len(topologies)):
+            clash_bar.progress(int(float(i)/float(len(topologies))*100.0), text=text)
             t_d = Topology.Dictionary(topologies[i])
             t_name = Dictionary.ValueAtKey(t_d,"IFC_name")
             t_id = Dictionary.ValueAtKey(t_d,"IFC_id")
