@@ -32,11 +32,11 @@ def topologiesByIFCFile(ifc_file, transferDictionaries=True):
         settings.set(settings.USE_BREP_DATA, True)
         settings.set(settings.USE_WORLD_COORDS, True)
         settings.set(settings.SEW_SHELLS, True)
-        iterator = ifcopenshell.geom.iterator(settings, ifc_file, multiprocessing.cpu_count())
         products = ifc_file.by_type('IfcProduct')
         print("Found Products:", len(products))
         for product in products:
             print(product.is_a())
+        iterator = ifcopenshell.geom.iterator(settings, ifc_file, multiprocessing.cpu_count())
         if iterator.initialize():
             i = 0
             while True:
