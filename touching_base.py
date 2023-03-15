@@ -46,7 +46,7 @@ def topologiesByIFCFile(ifc_file, transferDictionaries=True):
         text="Converting to Topologies"
         conv_bar = st.progress(0, text=text)
         for i, product in enumerate(products):
-            conv_bar.progress(i, text=text)
+            conv_bar.progress(int(float(i)/float(len(products))*100.0), text=text)
             try:
                 shape = ifcopenshell.geom.create_shape(settings, product)
                 verts = shape.geometry.verts # X Y Z of vertices in flattened list e.g. [v1x, v1y, v1z, v2x, v2y, v2z, ...]
