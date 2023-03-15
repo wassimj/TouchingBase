@@ -152,7 +152,7 @@ if ifc_file:
         text="Preparing Adjacency Matrix"
         adj_bar = st.progress(1, text=text)
         for i in range(len(topologies)):
-            adj_bar.progress(i, text=text)
+            adj_bar.progress(int(float(i)/float(len(topologies))*100.0), text=text)
             row = []
             for j in range(len(topologies)):
                 row.append(0)
