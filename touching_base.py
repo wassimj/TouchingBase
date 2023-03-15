@@ -35,9 +35,12 @@ def topologiesByIFCFile(ifc_file, transferDictionaries=True):
         st.write("Found Products:", len(products))
         for product in products:
             st.write(product.is_a())
-            cr = ifcopenshell.geom.create_shape(settings, product)
-            brep = cr.geometry.brep_data
-            st.write(brep[:100])
+            try:
+                cr = ifcopenshell.geom.create_shape(settings, product)
+                brep = cr.geometry.brep_data
+                topology = Topology.ByString(brep)
+            except:
+                topology = None
             if topology:
                 if transferDictionaries:
                     keys = []
