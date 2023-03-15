@@ -151,22 +151,25 @@ if ifc_file:
     #st.dataframe(data=csv)
     csv_string = convertToCSVString(csv)
     st.download_button("Download CSV", csv_string, "adjacency.csv", "text/csv", key='download-csv')
-    optionA = st.selectbox("objectA", options=options, index=0, key=1)
-    optionB = st.selectbox("objectA", options=options, index=0, key=2)
-    if (optionA and optionB) and (not optionA == optionB):
-        topologyA = Topology.Filter(topologies, topologyType='cell', searchType='any', key="IFC_id", value=optionA)[0]
-        topologyB = Topology.Filter(topologies, topologyType='cell', searchType='any', key="IFC_id", value=optionA)[0]
-        temp = Topology.Boolean(newTopologies[i], newTopologies[j], operation="merge")
-        condition = "unknown"
-        if isinstance(temp, topologic.CellComplex):
-            temp_cells = Topology.Cells(temp)
-            if len(temp_cells) == 2:
-                condition = "touching"
-            elif len(temp_cells) > 2:
-                condition = "overlapping"
-        else:
-            condition = "separated"
-        st.write(condition)
-        data = Plotly.DataByTopology(temp)
-        fig = Plotly.FigureByData(data)
-        st.plotly_chart(fig, use_container_width=True)
+    with st.form("my_form", key="1"):
+        optionA = st.selectbox("objectA", options=options, index=0, key=1)
+        optionB = st.selectbox("objectA", options=options, index=0, key=2)
+        submitted = st.form_submit_button("Submit")
+        if submitted:
+            if (optionA and optionB) and (not optionA == optionB):
+                topologyA = Topology.Filter(topologies, topologyType='cell', searchType='any', key="IFC_id", value=optionA)[0]
+                topologyB = Topology.Filter(topologies, topologyType='cell', searchType='any', key="IFC_id", value=optionA)[0]
+                temp = Topology.Boolean(newTopologies[i], newTopologies[j], operation="merge")
+                condition = "unknown"
+                if isinstance(temp, topologic.CellComplex):
+                    temp_cells = Topology.Cells(temp)
+                    if len(temp_cells) == 2:
+                        condition = "touching"
+                    elif len(temp_cells) > 2:
+                        condition = "overlapping"
+                else:
+                    condition = "separated"
+                st.write(condition)
+                data = Plotly.DataByTopology(temp)
+                fig = Plotly.FigureByData(data)
+                st.plotly_chart(fig, use_container_width=True)
