@@ -217,3 +217,5 @@ if ifc_file:
                     if st.button('RESET'):
                         ifc_file = None
                         st.session_state['ifc_file'] = None
+        elif optionA == optionB:
+            st.write("WARNING: identical object")
