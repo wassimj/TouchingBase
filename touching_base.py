@@ -37,7 +37,6 @@ def topologiesByIFCFile(ifc_file, transferDictionaries=True):
         st.write("Found Products:", len(products))
         i = 0
         for product in products:
-            st.write(product.is_a())
             try:
                 shape = ifcopenshell.geom.create_shape(settings, product)
                 verts = shape.geometry.verts # X Y Z of vertices in flattened list e.g. [v1x, v1y, v1z, v2x, v2y, v2z, ...]
@@ -47,7 +46,6 @@ def topologiesByIFCFile(ifc_file, transferDictionaries=True):
                 topology = Topology.SelfMerge(Topology.ByGeometry(vertices=vertices, faces=faces))
             except:
                 topology = None
-            st.write("   Created topology", topology)
             if topology:
                 if transferDictionaries:
                     keys = []
