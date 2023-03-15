@@ -5,13 +5,58 @@ from topologicpy.Cell import Cell
 from topologicpy.Topology import Topology
 from topologicpy.Plotly import Plotly
 from topologicpy.Dictionary import Dictionary
+import ifcopenshell
+import ifcopenshell.geom
+import multiprocessing
+import uuid
 
 st.title('Touching Base')
 
+def topologiesByIFCFile(ifc_file, transferDictionaries=True):
+    topologies = []
+    settings = ifcopenshell.geom.settings()
+    settings.set(settings.DISABLE_TRIANGULATION, True)
+    settings.set(settings.USE_BREP_DATA, True)
+    settings.set(settings.USE_WORLD_COORDS, True)
+    settings.set(settings.SEW_SHELLS, True)
+    iterator = ifcopenshell.geom.iterator(settings, ifc_file, multiprocessing.cpu_count())
+    if iterator.initialize():
+        while True:
+            shape = iterator.get()
+            brep = shape.geometry.brep_data
+            topology = Topology.ByString(brep)
+            if transferDictionaries:
+                    keys = []
+                    values = []
+                    keys.append("TOPOLOGIC_color")
+                    values.append([1.0,1.0,1.0,1.0])
+                    keys.append("TOPOLOGIC_id")
+                    values.append(str(uuid.uuid4()))
+                    keys.append("TOPOLOGIC_name")
+                    values.append(shape.name)
+                    keys.append("TOPOLOGIC_type")
+                    values.append(Topology.TypeAsString(topology))
+                    keys.append("IFC_id")
+                    values.append(str(shape.id))
+                    keys.append("IFC_guid")
+                    values.append(str(shape.guid))
+                    keys.append("IFC_unique_id")
+                    values.append(str(shape.unique_id))
+                    keys.append("IFC_name")
+                    values.append(shape.name)
+                    keys.append("IFC_type")
+                    values.append(shape.type)
+                    d = Dictionary.ByKeysValues(keys, values)
+                    topology = Topology.SetDictionary(topology, d)
+            topologies.append(topology)
+            if not iterator.next():
+                break
+    return topologies
 
 ifc_file = st.file_uploader("", type="ifc", accept_multiple_files=False)
 if ifc_file:
-    topologies = Topology.ByImportedIFC(ifc_file, transferDictionaries=True)
+    #topologies = Topology.ByImportedIFC(ifc_file, transferDictionaries=True)
+    topologies = topologiesByIFCFile(ifc_file, transferDictionaries=True)
     newTopologies = []
     for i, topology in enumerate(topologies):
         st.progress(i, "Transferring Information from IFC to topologicpy")
