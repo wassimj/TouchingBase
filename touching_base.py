@@ -1,7 +1,7 @@
 import streamlit as st
 import topologicpy
 import topologic
-from topologicpy.Cell import Cell
+from topologicpy.Cluster import Cluster
 from topologicpy.Topology import Topology
 from topologicpy.Plotly import Plotly
 from topologicpy.Dictionary import Dictionary
@@ -177,6 +177,7 @@ if ifc_file:
     with st.form("my_form"):
         optionA = st.selectbox("objectA", options=options, index=0, key=1)
         optionB = st.selectbox("objectB", options=options, index=0, key=2)
+        isolate = st.checkbox("isolate", value=False)
         submitted = st.form_submit_button("Submit")
     if submitted:
         if (optionA and optionB) and (not optionA == optionB):
@@ -200,6 +201,13 @@ if ifc_file:
                     else:
                         condition = "separated"
                     st.write(condition)
-                    data = Plotly.DataByTopology(temp)
-                    fig = Plotly.FigureByData(data)
+                    if not isolate:
+                        cluster = Cluster.ByTopologies(topologies)
+                        data00 = Plotly.DataByTopology(cluster, showFaces=False, edgeColor="lightgray")
+                    else:
+                        data00 = []
+                    
+                    data01 = Plotly.DataByTopology(topologyA, faceOpacity=1, faceColor="red")
+                    data02 = Plotly.DataByTopology(topologyB, faceOpacity=1, faceColor="blue")
+                    fig = Plotly.FigureByData(data00+data01+data02)
                     st.plotly_chart(fig)
