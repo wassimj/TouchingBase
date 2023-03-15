@@ -177,6 +177,7 @@ if ifc_file:
     with st.form("my_form"):
         optionA = st.selectbox("objectA", options=options, index=0, key=1)
         optionB = st.selectbox("objectB", options=options, index=0, key=2)
+        show = st.checkbox("show", value=False)
         isolate = st.checkbox("isolate", value=False)
         submitted = st.form_submit_button("Submit")
     if submitted:
@@ -197,13 +198,14 @@ if ifc_file:
                     else:
                         condition = "separated"
                     st.write(condition)
-                    if not isolate:
-                        cluster = Cluster.ByTopologies(topologies)
-                        data00 = Plotly.DataByTopology(cluster, showFaces=False, edgeColor="lightgray")
-                    else:
-                        data00 = []
-                    
-                    data01 = Plotly.DataByTopology(topologyA, faceOpacity=1, faceColor="red")
-                    data02 = Plotly.DataByTopology(topologyB, faceOpacity=1, faceColor="blue")
-                    fig = Plotly.FigureByData(data00+data01+data02)
-                    st.plotly_chart(fig)
+                    if show:
+                        if not isolate:
+                            cluster = Cluster.ByTopologies(topologies)
+                            data00 = Plotly.DataByTopology(cluster, showFaces=False, edgeColor="lightgray")
+                        else:
+                            data00 = []
+                        
+                        data01 = Plotly.DataByTopology(topologyA, faceOpacity=1, faceColor="red")
+                        data02 = Plotly.DataByTopology(topologyB, faceOpacity=1, faceColor="blue")
+                        fig = Plotly.FigureByData(data00+data01+data02)
+                        st.plotly_chart(fig)
