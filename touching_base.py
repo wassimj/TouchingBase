@@ -96,8 +96,10 @@ if ifc_file:
             newTopologies.append(newTopology)
 
     used = []
+    text="Preparing Adjacency Matrix"
+    my_bar = st.progress(0, text=text)
     for i in range(len(newTopologies)):
-        st.progress(i, "Preparing Adjacency Matrix")
+        my_bar.progress(i, text=text)
         row = []
         for j in range(len(newTopologies)):
             row.append(0)
@@ -129,7 +131,7 @@ if ifc_file:
                         condition = "separated"
                 else:
                     condition = "separated"
-                csv.append[str(counter),t_name,k_name,condition]
+                csv.append([str(counter),t_name,k_name,condition])
                 counter = counter + 1
                 used[i][j] = 1
                 used[j][i] = 1
