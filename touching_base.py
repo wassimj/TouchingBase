@@ -86,71 +86,92 @@ def topologiesByIFCFile(ifc_file, transferDictionaries=True):
     st.write("Converted", len(topologies), "Topologies")
     return topologies
 
-ifc_file = st.file_uploader(label="uploader01", type="ifc", accept_multiple_files=False)
+if 'ifc_file' not in st.session_state:
+    st.session_state['ifc_file'] = None
+if 'topologies' not in st.session_state:
+    st.session_state['topologies'] = None
+if 'csv' not in st.session_state:
+    st.session_state['csv'] = None
+
+ifc_file = st.session_state['Building']
+if not ifc_file:
+    ifc_file = st.file_uploader(label="uploader01", type="ifc", accept_multiple_files=False)
+    st.session_state['ifc_file'] = ifc_file
+topologies = st.session_state['topologies']
+if not ifc_file:
+    ifc_file = st.file_uploader(label="uploader01", type="ifc", accept_multiple_files=False)
+    st.session_state['ifc_file'] = ifc_file
 if ifc_file:
     #topologies = Topology.ByImportedIFC(ifc_file, transferDictionaries=True)
-    topologies = topologiesByIFCFile(ifc_file, transferDictionaries=True)
-    newTopologies = []
-    for i, topology in enumerate(topologies):
-        d = Topology.Dictionary(topology)
-        newTopology = Topology.SelfMerge(topology)
-        if not isinstance(newTopology, topologic.Cell):
-            cells = Topology.Cells(newTopology)
-            if len(cells) > 0:
-                for i, cell in enumerate(cells):
-                    name = Dictionary.ValueAtKey(d, "IFC_name")
-                    name = name+"_part_"+str(i+1)
-                    d2 = Dictionary.SetValueAtKey(d, "IFC_name", name)
-                    cell = Topology.SetDictionary(cell, d2)
-                    newTopologies.append(cell)
-        else:
-            newTopology = Topology.SetDictionary(newTopology, d)
-            newTopologies.append(newTopology)
+    if not topologies:
+        topologies = topologiesByIFCFile(ifc_file, transferDictionaries=True)
+        newTopologies = []
+        for i, topology in enumerate(topologies):
+            d = Topology.Dictionary(topology)
+            newTopology = Topology.SelfMerge(topology)
+            if not isinstance(newTopology, topologic.Cell):
+                cells = Topology.Cells(newTopology)
+                if len(cells) > 0:
+                    for i, cell in enumerate(cells):
+                        name = Dictionary.ValueAtKey(d, "IFC_name")
+                        name = name+"_part_"+str(i+1)
+                        d2 = Dictionary.SetValueAtKey(d, "IFC_name", name)
+                        cell = Topology.SetDictionary(cell, d2)
+                        newTopologies.append(cell)
+            else:
+                newTopology = Topology.SetDictionary(newTopology, d)
+                newTopologies.append(newTopology)
+        topologies = newTopologies
+        st.session_state['topologies'] = topologies
 
-    used = []
-    text="Preparing Adjacency Matrix"
-    adj_bar = st.progress(1, text=text)
-    for i in range(len(newTopologies)):
-        adj_bar.progress(i, text=text)
-        row = []
-        for j in range(len(newTopologies)):
-            row.append(0)
-        used.append(row)
+    csv = st.session_state['csv']
+    if not csv:
+        used = []
+        text="Preparing Adjacency Matrix"
+        adj_bar = st.progress(1, text=text)
+        for i in range(len(topologies)):
+            adj_bar.progress(i, text=text)
+            row = []
+            for j in range(len(topologies)):
+                row.append(0)
+            used.append(row)
 
-    bbList = []
-    for topology in newTopologies:
-        bbList.append(Topology.BoundingBox(topology))
-    counter = 1
-    csv = []
-    condition = "Unknown"
-    options = []
-    for i in range(len(newTopologies)):
-        t_d = Topology.Dictionary(newTopologies[i])
-        t_name = Dictionary.ValueAtKey(t_d,"IFC_name")
-        t_id = Dictionary.ValueAtKey(t_d,"IFC_id")
-        options.append(t_name)
-        for j in range(len(newTopologies)):
-            if used[i][j] == 0 and (not i==j):
-                k_d = Topology.Dictionary(newTopologies[j])
-                k_name = Dictionary.ValueAtKey(k_d,"IFC_name")
-                k_id = Dictionary.ValueAtKey(k_d,"IFC_id")
-                temp = Topology.Boolean(bbList[i], bbList[j], operation="merge")
-                if isinstance(temp, topologic.CellComplex):
-                    temp = Topology.Boolean(newTopologies[i], newTopologies[j], operation="merge")
+        bbList = []
+        for topology in topologies:
+            bbList.append(Topology.BoundingBox(topology))
+        counter = 1
+        csv = []
+        condition = "Unknown"
+        options = []
+        for i in range(len(topologies)):
+            t_d = Topology.Dictionary(newTopologies[i])
+            t_name = Dictionary.ValueAtKey(t_d,"IFC_name")
+            t_id = Dictionary.ValueAtKey(t_d,"IFC_id")
+            options.append(t_name)
+            for j in range(len(topologies)):
+                if used[i][j] == 0 and (not i==j):
+                    k_d = Topology.Dictionary(topologies[j])
+                    k_name = Dictionary.ValueAtKey(k_d,"IFC_name")
+                    k_id = Dictionary.ValueAtKey(k_d,"IFC_id")
+                    temp = Topology.Boolean(bbList[i], bbList[j], operation="merge")
                     if isinstance(temp, topologic.CellComplex):
-                        temp_cells = Topology.Cells(temp)
-                        if len(temp_cells) == 2:
-                            condition = "touching"
-                        elif len(temp_cells) > 2:
-                            condition = "overlapping"
+                        temp = Topology.Boolean(topologies[i], topologies[j], operation="merge")
+                        if isinstance(temp, topologic.CellComplex):
+                            temp_cells = Topology.Cells(temp)
+                            if len(temp_cells) == 2:
+                                condition = "touching"
+                            elif len(temp_cells) > 2:
+                                condition = "overlapping"
+                        else:
+                            condition = "separated"
                     else:
                         condition = "separated"
-                else:
-                    condition = "separated"
-                csv.append([str(counter),t_name,k_name,condition])
-                counter = counter + 1
-                used[i][j] = 1
-                used[j][i] = 1
+                    csv.append([str(counter),t_name,k_name,condition])
+                    counter = counter + 1
+                    used[i][j] = 1
+                    used[j][i] = 1
+        st.session_state['csv'] = csv#
+    
     #st.dataframe(data=csv)
     csv_string = convertToCSVString(csv)
     st.download_button("Download CSV", csv_string, "adjacency.csv", "text/csv", key='download-csv')
@@ -175,4 +196,4 @@ if ifc_file:
                 st.write(condition)
                 data = Plotly.DataByTopology(temp)
                 fig = Plotly.FigureByData(data)
-                st.plotly_chart(fig, use_container_width=True)
+                st.plotly_chart(fig)
