@@ -28,7 +28,7 @@ def topologiesByIFCFile(ifc_file, transferDictionaries=True):
         topologies = []
         settings = ifcopenshell.geom.settings()
         settings.set(settings.DISABLE_TRIANGULATION, False)
-        settings.set(settings.USE_BREP_DATA, True)
+        settings.set(settings.USE_BREP_DATA, False)
         settings.set(settings.USE_WORLD_COORDS, True)
         settings.set(settings.SEW_SHELLS, True)
         settings.set(settings.INCLUDE_CURVES, False)
@@ -38,9 +38,12 @@ def topologiesByIFCFile(ifc_file, transferDictionaries=True):
         for product in products:
             st.write(product.is_a())
             try:
-                cr = ifcopenshell.geom.create_shape(settings, product)
-                brep = cr.geometry.brep_data
-                topology = Topology.ByString(brep)
+                shape = ifcopenshell.geom.create_shape(settings, product)
+                faces = shape.geometry.faces
+                vertices = shape.geometry.verts
+                st.write("Faces", len(faces))
+                st.write("Vertices", len(vertices))
+                topology = Topology.ByGeometry(vertices=vertices, faces=faces)
             except:
                 topology = None
             if topology:
@@ -52,19 +55,19 @@ def topologiesByIFCFile(ifc_file, transferDictionaries=True):
                     keys.append("TOPOLOGIC_id")
                     values.append(str(uuid.uuid4()))
                     keys.append("TOPOLOGIC_name")
-                    values.append(shape.name)
+                    values.append(product.name)
                     keys.append("TOPOLOGIC_type")
                     values.append(Topology.TypeAsString(topology))
                     keys.append("IFC_id")
-                    values.append(str(shape.id))
+                    values.append(str(product.id))
                     keys.append("IFC_guid")
-                    values.append(str(shape.guid))
+                    values.append(str(product.guid))
                     keys.append("IFC_unique_id")
-                    values.append(str(shape.unique_id))
+                    values.append(str(product.unique_id))
                     keys.append("IFC_name")
-                    values.append(shape.name)
+                    values.append(product.name)
                     keys.append("IFC_type")
-                    values.append(shape.type)
+                    values.append(product.type)
                     d = Dictionary.ByKeysValues(keys, values)
                     topology = Topology.SetDictionary(topology, d)
                 topologies.append(topology)
