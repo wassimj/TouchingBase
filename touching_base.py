@@ -17,6 +17,12 @@ st.title('Touching Base')
 
 def topologiesByIFCFile(ifc_file, transferDictionaries=True):
     st.write(ifc_file.name)
+    if ifc_file:
+        from tempfile import NamedTemporaryFile
+        with NamedTemporaryFile(dir='.', suffix='.ifc') as f:
+            f.write(uploaded_file.getbuffer())
+            st.write(f.name)
+            return
     from tempfile import NamedTemporaryFile
     with NamedTemporaryFile(dir='.', suffix='.ifc') as f:
         f.write(ifc_file.getbuffer())
