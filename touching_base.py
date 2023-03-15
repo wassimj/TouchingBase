@@ -93,7 +93,7 @@ if 'topologies' not in st.session_state:
 if 'csv' not in st.session_state:
     st.session_state['csv'] = None
 
-ifc_file = st.session_state['Building']
+ifc_file = st.session_state['ifc_file']
 if not ifc_file:
     ifc_file = st.file_uploader(label="uploader01", type="ifc", accept_multiple_files=False)
     st.session_state['ifc_file'] = ifc_file
