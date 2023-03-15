@@ -13,7 +13,8 @@ import uuid
 st.title('Touching Base')
 
 def topologiesByIFCFile(ifc_file, transferDictionaries=True):
-    ifc_file = ifc_file.getvalue().decode('utf-8')
+    ifc_file = ifcopenshell.open(ifc_file)
+    st.write(ifc_file)
     topologies = []
     settings = ifcopenshell.geom.settings()
     settings.set(settings.DISABLE_TRIANGULATION, True)
