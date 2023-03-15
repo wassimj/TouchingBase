@@ -152,8 +152,8 @@ if ifc_file:
     csv_string = convertToCSVString(csv)
     st.download_button("Download CSV", csv_string, "adjacency.csv", "text/csv", key='download-csv')
     optionA = st.selectbox("objectA", options=options, index=0, key=1)
-    optionB = st.selectbox("objectA", options=options, index=1, key=2)
-    if optionA and optionB:
+    optionB = st.selectbox("objectA", options=options, index=0, key=2)
+    if (optionA and optionB) and (not optionA == optionB):
         topologyA = Topology.Filter(topologies, topologyType='cell', searchType='any', key="IFC_id", value=optionA)[0]
         topologyB = Topology.Filter(topologies, topologyType='cell', searchType='any', key="IFC_id", value=optionA)[0]
         temp = Topology.Boolean(newTopologies[i], newTopologies[j], operation="merge")
