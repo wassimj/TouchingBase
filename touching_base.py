@@ -95,7 +95,7 @@ if 'options' not in st.session_state:
 
 ifc_file = st.session_state['ifc_file']
 if not ifc_file:
-    ifc_file = st.file_uploader(label="uploader01", type="ifc", accept_multiple_files=False)
+    ifc_file = st.file_uploader(label="IFC File Uploader", type="ifc", accept_multiple_files=False)
     st.session_state['ifc_file'] = ifc_file
 topologies = st.session_state['topologies']
 if ifc_file:
@@ -181,12 +181,8 @@ if ifc_file:
         submitted = st.form_submit_button("Submit")
     if submitted:
         if (optionA and optionB) and (not optionA == optionB):
-            #topologyA = Topology.Filter(topologies, topologyType='cell', searchType='any', key="IFC_name", value=optionA)[0]
             topologyA = topologies[options.index(optionA)]
-            st.write(topologyA)
-            #topologyB = Topology.Filter(topologies, topologyType='cell', searchType='any', key="IFC_name", value=optionB)[0]
             topologyB = topologies[options.index(optionB)]
-            st.write(topologyB)
             if topologyA and topologyB:
                 temp = Topology.Boolean(topologyA, topologyB, operation="merge")
                 if not temp:
