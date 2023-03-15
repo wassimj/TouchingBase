@@ -38,6 +38,8 @@ def adjacency(topologyA, topologyB):
     return "overlapping"
 
 def convertToCSVString(csv):
+    if not csv:
+        return ""
     csv_string = ""
     i = 0
     for i, line in enumerate(csv):
@@ -148,40 +150,45 @@ if ifc_file:
 
     csv = st.session_state['csv']
     if not csv:
-        used = []
-        text="Preparing Adjacency Matrix"
-        adj_bar = st.progress(1, text=text)
-        for i in range(len(topologies)):
-            adj_bar.progress(int(float(i)/float(len(topologies))*100.0), text=text)
-            row = []
-            for j in range(len(topologies)):
-                row.append(0)
-            used.append(row)
+        with st.form("run_clas_detection"):
+        runall = st.checkbox("Detect All Clashes", value=False)
+        submitted = st.form_submit_button("Submit")
+    if submitted:
+        if runall:
+            used = []
+            text="Preparing Adjacency Matrix"
+            adj_bar = st.progress(1, text=text)
+            for i in range(len(topologies)):
+                adj_bar.progress(int(float(i)/float(len(topologies))*100.0), text=text)
+                row = []
+                for j in range(len(topologies)):
+                    row.append(0)
+                used.append(row)
 
-        counter = 1
-        csv = []
-        condition = "Unknown"
-        options = []
-        text="Clash Detection"
-        clash_bar = st.progress(2, text=text)
-        for i in range(len(topologies)):
-            clash_bar.progress(int(float(i)/float(len(topologies))*100.0), text=text)
-            t_d = Topology.Dictionary(topologies[i])
-            t_name = Dictionary.ValueAtKey(t_d,"IFC_name")
-            t_id = Dictionary.ValueAtKey(t_d,"IFC_id")
-            options.append(t_name)
-            for j in range(len(topologies)):
-                if used[i][j] == 0 and (not i==j):
-                    k_d = Topology.Dictionary(topologies[j])
-                    k_name = Dictionary.ValueAtKey(k_d,"IFC_name")
-                    k_id = Dictionary.ValueAtKey(k_d,"IFC_id")
-                    condition = adjacency(topologies[i], topologies[j])
-                    csv.append([str(counter),t_name,k_name,condition])
-                    counter = counter + 1
-                    used[i][j] = 1
-                    used[j][i] = 1
-        st.session_state['csv'] = csv
-        st.session_state['options'] = options
+            counter = 1
+            csv = []
+            condition = "Unknown"
+            options = []
+            text="Clash Detection"
+            clash_bar = st.progress(2, text=text)
+            for i in range(len(topologies)):
+                clash_bar.progress(int(float(i)/float(len(topologies))*100.0), text=text)
+                t_d = Topology.Dictionary(topologies[i])
+                t_name = Dictionary.ValueAtKey(t_d,"IFC_name")
+                t_id = Dictionary.ValueAtKey(t_d,"IFC_id")
+                options.append(t_name)
+                for j in range(len(topologies)):
+                    if used[i][j] == 0 and (not i==j):
+                        k_d = Topology.Dictionary(topologies[j])
+                        k_name = Dictionary.ValueAtKey(k_d,"IFC_name")
+                        k_id = Dictionary.ValueAtKey(k_d,"IFC_id")
+                        condition = adjacency(topologies[i], topologies[j])
+                        csv.append([str(counter),t_name,k_name,condition])
+                        counter = counter + 1
+                        used[i][j] = 1
+                        used[j][i] = 1
+            st.session_state['csv'] = csv
+            st.session_state['options'] = options
     
     #st.dataframe(data=csv)
     csv_string = convertToCSVString(csv)
