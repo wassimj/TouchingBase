@@ -176,7 +176,7 @@ if ifc_file:
     st.download_button("Download CSV", csv_string, "adjacency.csv", "text/csv", key='download-csv')
     with st.form("my_form"):
         optionA = st.selectbox("objectA", options=options, index=0, key=1)
-        optionB = st.selectbox("objectA", options=options, index=0, key=2)
+        optionB = st.selectbox("objectB", options=options, index=0, key=2)
         submitted = st.form_submit_button("Submit")
     if submitted:
         if (optionA and optionB) and (not optionA == optionB):
