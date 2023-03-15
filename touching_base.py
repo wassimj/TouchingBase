@@ -38,12 +38,15 @@ def topologiesByIFCFile(ifc_file, transferDictionaries=True):
         i = 0
         for product in products:
             st.write(product.is_a())
-            shape = ifcopenshell.geom.create_shape(settings, product)
-            verts = shape.geometry.verts # X Y Z of vertices in flattened list e.g. [v1x, v1y, v1z, v2x, v2y, v2z, ...]
-            faces = shape.geometry.faces # Indices of vertices per triangle face e.g. [f1v1, f1v2, f1v3, f2v1, f2v2, f2v3, ...]
-            vertices = [[verts[i], verts[i + 1], verts[i + 2]] for i in range(0, len(verts), 3)]
-            faces = [[faces[i], faces[i + 1], faces[i + 2]] for i in range(0, len(faces), 3)]
-            topology = Topology.SelfMerge(Topology.ByGeometry(vertices=vertices, faces=faces))
+            try:
+                shape = ifcopenshell.geom.create_shape(settings, product)
+                verts = shape.geometry.verts # X Y Z of vertices in flattened list e.g. [v1x, v1y, v1z, v2x, v2y, v2z, ...]
+                faces = shape.geometry.faces # Indices of vertices per triangle face e.g. [f1v1, f1v2, f1v3, f2v1, f2v2, f2v3, ...]
+                vertices = [[verts[i], verts[i + 1], verts[i + 2]] for i in range(0, len(verts), 3)]
+                faces = [[faces[i], faces[i + 1], faces[i + 2]] for i in range(0, len(faces), 3)]
+                topology = Topology.SelfMerge(Topology.ByGeometry(vertices=vertices, faces=faces))
+            except:
+                topology = None
             st.write("   Created topology", topology)
             if topology:
                 if transferDictionaries:
