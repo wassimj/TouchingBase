@@ -216,6 +216,13 @@ if ifc_file:
                     st.plotly_chart(fig)
                     if st.button('RESET'):
                         ifc_file = None
+                        topologies = None
+                        csv = None
+                        options = None
                         st.session_state['ifc_file'] = None
+                        st.session_state['topologies'] = None
+                        st.session_state['csv'] = None
+                        st.session_state['options'] = None
+
         elif optionA == optionB:
             st.write("WARNING: identical object")
