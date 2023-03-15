@@ -29,10 +29,13 @@ def topologiesByIFCFile(ifc_file, transferDictionaries=True):
     settings.set(settings.SEW_SHELLS, True)
     iterator = ifcopenshell.geom.iterator(settings, ifc_file, multiprocessing.cpu_count())
     if iterator.initialize():
+        i = 0
         while True:
-            st.write("Reading entity")
             shape = iterator.get()
             brep = shape.geometry.brep_data
+            if i == 0:
+                st.write(brep)
+                i = 1
             topology = Topology.ByString(brep)
             if transferDictionaries:
                     keys = []
