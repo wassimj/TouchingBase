@@ -20,15 +20,11 @@ def topologiesByIFCFile(ifc_file, transferDictionaries=True):
     if ifc_file:
         from tempfile import NamedTemporaryFile
         with NamedTemporaryFile(dir='.', suffix='.ifc') as f:
-            f.write(uploaded_file.getbuffer())
+            f.write(ifc_file.getbuffer())
             st.write(f.name)
             ifc_file = ifcopenshell.open(f.name)
             st.write("IFC File:", ifc_file)
             return
-    from tempfile import NamedTemporaryFile
-    with NamedTemporaryFile(dir='.', suffix='.ifc') as f:
-        f.write(ifc_file.getbuffer())
-        ifc_file = ifcopenshell.open(f.name)
     topologies = []
     settings = ifcopenshell.geom.settings()
     settings.set(settings.DISABLE_TRIANGULATION, True)
