@@ -17,6 +17,7 @@ st.title('Touching Base')
 
 def topologiesByIFCFile(ifc_file, transferDictionaries=True):
     st.write(ifc_file.name)
+    topologies = []
     if ifc_file:
         from tempfile import NamedTemporaryFile
         with NamedTemporaryFile(dir='.', suffix='.ifc') as f:
@@ -24,49 +25,48 @@ def topologiesByIFCFile(ifc_file, transferDictionaries=True):
             st.write(f.name)
             ifc_file = ifcopenshell.open(f.name)
             st.write("IFC File:", ifc_file)
-            return
-    topologies = []
-    settings = ifcopenshell.geom.settings()
-    settings.set(settings.DISABLE_TRIANGULATION, True)
-    settings.set(settings.USE_BREP_DATA, True)
-    settings.set(settings.USE_WORLD_COORDS, True)
-    settings.set(settings.SEW_SHELLS, True)
-    iterator = ifcopenshell.geom.iterator(settings, ifc_file, multiprocessing.cpu_count())
-    if iterator.initialize():
-        i = 0
-        while True:
-            shape = iterator.get()
-            brep = shape.geometry.brep_data
-            if i == 0:
-                st.write(brep)
-                i = 1
-            topology = Topology.ByString(brep)
-            if transferDictionaries:
-                    keys = []
-                    values = []
-                    keys.append("TOPOLOGIC_color")
-                    values.append([1.0,1.0,1.0,1.0])
-                    keys.append("TOPOLOGIC_id")
-                    values.append(str(uuid.uuid4()))
-                    keys.append("TOPOLOGIC_name")
-                    values.append(shape.name)
-                    keys.append("TOPOLOGIC_type")
-                    values.append(Topology.TypeAsString(topology))
-                    keys.append("IFC_id")
-                    values.append(str(shape.id))
-                    keys.append("IFC_guid")
-                    values.append(str(shape.guid))
-                    keys.append("IFC_unique_id")
-                    values.append(str(shape.unique_id))
-                    keys.append("IFC_name")
-                    values.append(shape.name)
-                    keys.append("IFC_type")
-                    values.append(shape.type)
-                    d = Dictionary.ByKeysValues(keys, values)
-                    topology = Topology.SetDictionary(topology, d)
-            topologies.append(topology)
-            if not iterator.next():
-                break
+            topologies = []
+            settings = ifcopenshell.geom.settings()
+            settings.set(settings.DISABLE_TRIANGULATION, True)
+            settings.set(settings.USE_BREP_DATA, True)
+            settings.set(settings.USE_WORLD_COORDS, True)
+            settings.set(settings.SEW_SHELLS, True)
+            iterator = ifcopenshell.geom.iterator(settings, ifc_file, multiprocessing.cpu_count())
+            if iterator.initialize():
+                i = 0
+                while True:
+                    shape = iterator.get()
+                    brep = shape.geometry.brep_data
+                    if i == 0:
+                        st.write(brep)
+                        i = 1
+                    topology = Topology.ByString(brep)
+                    if transferDictionaries:
+                            keys = []
+                            values = []
+                            keys.append("TOPOLOGIC_color")
+                            values.append([1.0,1.0,1.0,1.0])
+                            keys.append("TOPOLOGIC_id")
+                            values.append(str(uuid.uuid4()))
+                            keys.append("TOPOLOGIC_name")
+                            values.append(shape.name)
+                            keys.append("TOPOLOGIC_type")
+                            values.append(Topology.TypeAsString(topology))
+                            keys.append("IFC_id")
+                            values.append(str(shape.id))
+                            keys.append("IFC_guid")
+                            values.append(str(shape.guid))
+                            keys.append("IFC_unique_id")
+                            values.append(str(shape.unique_id))
+                            keys.append("IFC_name")
+                            values.append(shape.name)
+                            keys.append("IFC_type")
+                            values.append(shape.type)
+                            d = Dictionary.ByKeysValues(keys, values)
+                            topology = Topology.SetDictionary(topology, d)
+                    topologies.append(topology)
+                    if not iterator.next():
+                        break
     return topologies
 
 ifc_file = st.file_uploader("", type="ifc", accept_multiple_files=False)
