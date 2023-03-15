@@ -196,14 +196,22 @@ if ifc_file:
                     condition = "unknown"
                 else:
                     if isinstance(temp, topologic.CellComplex):
+                        st.write("The object is a CellComplex")
                         temp_cells = Topology.Cells(temp)
                         if len(temp_cells) == 2:
+                            st.write("The CellComplex has 2 cells")
                             condition = "touching"
                         elif len(temp_cells) > 2:
+                            st.write("The CellComplex has", str(len(temp_cells)),"cells")
                             condition = "overlapping"
                     elif isinstance(temp, topologic.Cluster):
+                        st.write("The object is a Cluster")
+
                         if len(Topology.CellComplexes(temp)) > 0:
+                            st.write("The Cluster has CellComplexes")
                             condition = "overlapping"
+                        else:
+                            condition = "separated"
                     else:
                         condition = "separated"
                     st.write(condition)
