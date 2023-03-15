@@ -43,9 +43,12 @@ def topologiesByIFCFile(ifc_file, transferDictionaries=True):
         settings.set(settings.INCLUDE_CURVES, False)
         settings.set(settings.EXCLUDE_SOLIDS_AND_SURFACES, True)
         products = ifc_file.by_type('IfcProduct')
-        st.write("Found Products:", len(products))
+        st.write("Found", len(products), "IFC products")
         i = 0
-        for product in products:
+        text="Converting to Topologies"
+        conv_bar = st.progress(0, text=text)
+        for i, product in enumerate(products):
+            conv_bar.progress(i, text=text)
             try:
                 shape = ifcopenshell.geom.create_shape(settings, product)
                 verts = shape.geometry.verts # X Y Z of vertices in flattened list e.g. [v1x, v1y, v1z, v2x, v2y, v2z, ...]
@@ -80,7 +83,7 @@ def topologiesByIFCFile(ifc_file, transferDictionaries=True):
                     d = Dictionary.ByKeysValues(keys, values)
                     topology = Topology.SetDictionary(topology, d)
                 topologies.append(topology)
-    st.write("Found", len(topologies), "Topologies")
+    st.write("Converted", len(topologies), "Topologies")
     return topologies
 
 ifc_file = st.file_uploader(label="uploader01", type="ifc", accept_multiple_files=False)
@@ -88,6 +91,7 @@ if ifc_file:
     #topologies = Topology.ByImportedIFC(ifc_file, transferDictionaries=True)
     topologies = topologiesByIFCFile(ifc_file, transferDictionaries=True)
     newTopologies = []
+    conv_bar = st.progress(0, text=text)
     for i, topology in enumerate(topologies):
         d = Topology.Dictionary(topology)
         newTopology = Topology.SelfMerge(topology)
@@ -106,9 +110,9 @@ if ifc_file:
 
     used = []
     text="Preparing Adjacency Matrix"
-    my_bar = st.progress(0, text=text)
+    adj_bar = st.progress(1, text=text)
     for i in range(len(newTopologies)):
-        my_bar.progress(i, text=text)
+        adj_bar.progress(i, text=text)
         row = []
         for j in range(len(newTopologies)):
             row.append(0)
@@ -125,7 +129,7 @@ if ifc_file:
         t_d = Topology.Dictionary(newTopologies[i])
         t_name = Dictionary.ValueAtKey(t_d,"IFC_name")
         t_id = Dictionary.ValueAtKey(t_d,"IFC_id")
-        options.append(t_id)
+        options.append(t_name)
         for j in range(len(newTopologies)):
             if used[i][j] == 0 and (not i==j):
                 k_d = Topology.Dictionary(newTopologies[j])
@@ -151,14 +155,14 @@ if ifc_file:
     #st.dataframe(data=csv)
     csv_string = convertToCSVString(csv)
     st.download_button("Download CSV", csv_string, "adjacency.csv", "text/csv", key='download-csv')
-    with st.form("my_form", key="1"):
+    with st.form("my_form"):
         optionA = st.selectbox("objectA", options=options, index=0, key=1)
         optionB = st.selectbox("objectA", options=options, index=0, key=2)
         submitted = st.form_submit_button("Submit")
         if submitted:
             if (optionA and optionB) and (not optionA == optionB):
-                topologyA = Topology.Filter(topologies, topologyType='cell', searchType='any', key="IFC_id", value=optionA)[0]
-                topologyB = Topology.Filter(topologies, topologyType='cell', searchType='any', key="IFC_id", value=optionA)[0]
+                topologyA = Topology.Filter(topologies, topologyType='cell', searchType='any', key="IFC_name", value=optionA)[0]
+                topologyB = Topology.Filter(topologies, topologyType='cell', searchType='any', key="IFC_name", value=optionB)[0]
                 temp = Topology.Boolean(newTopologies[i], newTopologies[j], operation="merge")
                 condition = "unknown"
                 if isinstance(temp, topologic.CellComplex):
