@@ -35,11 +35,15 @@ def topologiesByIFCFile(ifc_file, transferDictionaries=True):
         settings.set(settings.EXCLUDE_SOLIDS_AND_SURFACES, True)
         products = ifc_file.by_type('IfcProduct')
         st.write("Found Products:", len(products))
+        i = 0
         for product in products:
             st.write(product.is_a())
             shape = ifcopenshell.geom.create_shape(settings, product)
             faces = shape.geometry.faces
             vertices = shape.geometry.verts
+            if i == 0:
+                st.write(vertices)
+                i = 1
             st.write("   Faces", len(faces))
             st.write("   Vertices", len(vertices))
             topology = Topology.ByGeometry(vertices=vertices, faces=faces)
