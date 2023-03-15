@@ -201,7 +201,7 @@ if ifc_file:
                     if show:
                         if not isolate:
                             cluster = Cluster.ByTopologies(topologies)
-                            data00 = Plotly.DataByTopology(cluster, showFaces=False, edgeColor="lightgray", vertexColor="lightgray")
+                            data00 = Plotly.DataByTopology(cluster, showFaces=False, edgeColor="lightgray", vertexColor="lightgray", edgeLabel="", vertexLabel="")
                         else:
                             data00 = []
                         
