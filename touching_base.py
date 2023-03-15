@@ -43,7 +43,7 @@ def topologiesByIFCFile(ifc_file, transferDictionaries=True):
             faces = shape.geometry.faces # Indices of vertices per triangle face e.g. [f1v1, f1v2, f1v3, f2v1, f2v2, f2v3, ...]
             vertices = [[verts[i], verts[i + 1], verts[i + 2]] for i in range(0, len(verts), 3)]
             faces = [[faces[i], faces[i + 1], faces[i + 2]] for i in range(0, len(faces), 3)]
-            topology = Topology.ByGeometry(vertices=vertices, faces=faces)
+            topology = Topology.SelfMerge(Topology.ByGeometry(vertices=vertices, faces=faces))
             st.write("   Created topology", topology)
             if topology:
                 if transferDictionaries:
@@ -54,19 +54,19 @@ def topologiesByIFCFile(ifc_file, transferDictionaries=True):
                     keys.append("TOPOLOGIC_id")
                     values.append(str(uuid.uuid4()))
                     keys.append("TOPOLOGIC_name")
-                    values.append(product.name)
+                    values.append(shape.name)
                     keys.append("TOPOLOGIC_type")
                     values.append(Topology.TypeAsString(topology))
                     keys.append("IFC_id")
-                    values.append(str(product.id))
+                    values.append(str(shape.id))
                     keys.append("IFC_guid")
-                    values.append(str(product.guid))
+                    values.append(str(shape.guid))
                     keys.append("IFC_unique_id")
-                    values.append(str(product.unique_id))
+                    values.append(str(shape.unique_id))
                     keys.append("IFC_name")
-                    values.append(product.name)
+                    values.append(shape.name)
                     keys.append("IFC_type")
-                    values.append(product.type)
+                    values.append(shape.type)
                     d = Dictionary.ByKeysValues(keys, values)
                     topology = Topology.SetDictionary(topology, d)
                 topologies.append(topology)
