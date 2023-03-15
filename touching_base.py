@@ -27,10 +27,12 @@ def topologiesByIFCFile(ifc_file, transferDictionaries=True):
         st.write("IFC File:", ifc_file)
         topologies = []
         settings = ifcopenshell.geom.settings()
-        settings.set(settings.DISABLE_TRIANGULATION, True)
+        settings.set(settings.DISABLE_TRIANGULATION, False)
         settings.set(settings.USE_BREP_DATA, True)
         settings.set(settings.USE_WORLD_COORDS, True)
         settings.set(settings.SEW_SHELLS, True)
+        settings.set(settings.INCLUDE_CURVES, False)
+        settings.set(settings.EXCLUDE_SOLIDS_AND_SURFACES, True)
         products = ifc_file.by_type('IfcProduct')
         st.write("Found Products:", len(products))
         for product in products:
