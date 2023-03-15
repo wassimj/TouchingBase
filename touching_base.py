@@ -199,6 +199,9 @@ if ifc_file:
                             condition = "touching"
                         elif len(temp_cells) > 2:
                             condition = "overlapping"
+                    elif isinstance(temp, topologic.Cluster):
+                        if len(Topology.CellComplexes(temp)) > 0:
+                            condition = "overlapping"
                     else:
                         condition = "separated"
                     st.write(condition)
