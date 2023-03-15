@@ -9,11 +9,14 @@ import ifcopenshell
 import ifcopenshell.geom
 import multiprocessing
 import uuid
+import os.path
+import pathlib
 
 st.title('Touching Base')
 
+
 def topologiesByIFCFile(ifc_file, transferDictionaries=True):
-    ifc_file = ifcopenshell.open(ifc_file)
+    ifc_file = ifcopenshell.open(ifc_file.name)
     st.write(ifc_file)
     topologies = []
     settings = ifcopenshell.geom.settings()
