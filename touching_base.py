@@ -91,7 +91,6 @@ if ifc_file:
     #topologies = Topology.ByImportedIFC(ifc_file, transferDictionaries=True)
     topologies = topologiesByIFCFile(ifc_file, transferDictionaries=True)
     newTopologies = []
-    conv_bar = st.progress(0, text=text)
     for i, topology in enumerate(topologies):
         d = Topology.Dictionary(topology)
         newTopology = Topology.SelfMerge(topology)
