@@ -1,0 +1,6 @@
+# Requirements for TopologicST
+streamlit
+plotly
+topologicpy
+ifcopenshell
+pandas
