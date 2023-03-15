@@ -188,10 +188,12 @@ if ifc_file:
     if submitted:
         if (optionA and optionB) and (not optionA == optionB):
             topologyA = topologies[options.index(optionA)]
+            st.write("Topology A: ", topologyA)
             topologyB = topologies[options.index(optionB)]
+            st.write("Topology B: ", topologyB)
             if topologyA and topologyB:
                 temp = Topology.SelfMerge(Topology.Boolean(topologyA, topologyB, operation="merge"))
-                print(Topology.Analyze(temp))
+                st.write("Result", temp)
                 condition = "unknown"
                 if not temp:
                     condition = "unknown"
@@ -209,7 +211,7 @@ if ifc_file:
                         st.write("The object is a Cluster")
 
                         if len(Topology.CellComplexes(temp)) > 0:
-                            st.write("The Cluster has CellComplexes")
+                            st.write("The Cluster has", str(len(Topology.CellComplexes(temp))), "CellComplexes")
                             condition = "overlapping"
                         else:
                             condition = "separated"
