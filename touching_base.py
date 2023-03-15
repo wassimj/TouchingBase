@@ -154,17 +154,20 @@ if ifc_file:
                     k_id = Dictionary.ValueAtKey(k_d,"IFC_id")
                     temp = Topology.Boolean(bbList[i], bbList[j], operation="merge")
                     if isinstance(temp, topologic.CellComplex):
-                        temp = Topology.Boolean(topologies[i], topologies[j], operation="merge")
+                        temp = Topology.SelfMerge(Topology.Boolean(topologies[i], topologies[j], operation="merge"))
                         if isinstance(temp, topologic.CellComplex):
                             temp_cells = Topology.Cells(temp)
                             if len(temp_cells) == 2:
                                 condition = "touching"
                             elif len(temp_cells) > 2:
                                 condition = "overlapping"
+                        elif isinstance(temp, topologic.Cluster):
+                            if len(Topology.CellComplexes(temp)) > 0:
+                                condition = "overlapping"
+                            else:
+                                condition = "separated"
                         else:
                             condition = "separated"
-                    else:
-                        condition = "separated"
                     csv.append([str(counter),t_name,k_name,condition])
                     counter = counter + 1
                     used[i][j] = 1
