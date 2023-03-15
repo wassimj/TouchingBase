@@ -31,9 +31,7 @@ def topologiesByIFCFile(ifc_file, transferDictionaries=True):
         from tempfile import NamedTemporaryFile
         with NamedTemporaryFile(dir='.', suffix='.ifc') as f:
             f.write(ifc_file.getbuffer())
-            st.write(f.name)
             ifc_file = ifcopenshell.open(f.name)
-        st.write("IFC File:", ifc_file)
         topologies = []
         settings = ifcopenshell.geom.settings()
         settings.set(settings.DISABLE_TRIANGULATION, False)
@@ -43,7 +41,7 @@ def topologiesByIFCFile(ifc_file, transferDictionaries=True):
         settings.set(settings.INCLUDE_CURVES, False)
         settings.set(settings.EXCLUDE_SOLIDS_AND_SURFACES, True)
         products = ifc_file.by_type('IfcProduct')
-        st.write("Found", len(products), "IFC products")
+        st.write("Found", str(len(products)), "IFC products")
         i = 0
         text="Converting to Topologies"
         conv_bar = st.progress(0, text=text)
@@ -83,7 +81,7 @@ def topologiesByIFCFile(ifc_file, transferDictionaries=True):
                     d = Dictionary.ByKeysValues(keys, values)
                     topology = Topology.SetDictionary(topology, d)
                 topologies.append(topology)
-    st.write("Converted", len(topologies), "Topologies")
+    st.write("Converted", str(len(topologies)), "Topologies")
     return topologies
 
 if 'ifc_file' not in st.session_state:
@@ -195,9 +193,9 @@ if ifc_file:
             else:
                 condition = "separated"
             st.write(condition)
-    st.write(temp)
-    data = Plotly.DataByTopology(temp)
-    st.write(data)
-    fig = Plotly.FigureByData(data)
-    st.write(fig)
-    st.plotly_chart(fig)
+            st.write(temp)
+            data = Plotly.DataByTopology(temp)
+            st.write(data)
+            fig = Plotly.FigureByData(data)
+            st.write(fig)
+            st.plotly_chart(fig)
