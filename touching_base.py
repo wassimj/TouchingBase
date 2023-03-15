@@ -42,12 +42,11 @@ def topologiesByIFCFile(ifc_file, transferDictionaries=True):
         settings.set(settings.EXCLUDE_SOLIDS_AND_SURFACES, True)
         products = ifc_file.by_type('IfcProduct')
         st.write("Found", str(len(products)), "IFC products")
-        i = 0
+        if len(products) > 500:
+            st.write("WARNING, can only convert a maximum of 100 IFC products")
+            products = products[:100]
         text="Converting to Topologies"
         conv_bar = st.progress(0, text=text)
-        if len(products) > 500:
-            st.write("WARNING, can only convert a maximum of 500 IFC products")
-            products = products[:500]
         for i, product in enumerate(products[:500]):
             conv_bar.progress(int(float(i)/float(len(products))*100.0), text=text)
             try:
