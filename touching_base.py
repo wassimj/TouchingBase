@@ -180,8 +180,12 @@ if ifc_file:
         submitted = st.form_submit_button("Submit")
     if submitted:
         if (optionA and optionB) and (not optionA == optionB):
-            topologyA = Topology.Filter(topologies, topologyType='cell', searchType='any', key="IFC_name", value=optionA)[0]
-            topologyB = Topology.Filter(topologies, topologyType='cell', searchType='any', key="IFC_name", value=optionB)[0]
+            #topologyA = Topology.Filter(topologies, topologyType='cell', searchType='any', key="IFC_name", value=optionA)[0]
+            topologyA = topologies[options.index(optionA)]
+            st.write(topologyA)
+            #topologyB = Topology.Filter(topologies, topologyType='cell', searchType='any', key="IFC_name", value=optionB)[0]
+            topologyB = topologies[options.index(optionB)]
+            st.write(topologyB)
             if topologyA and topologyB:
                 temp = Topology.Boolean(topologyA, topologyB, operation="merge")
                 if not temp:
