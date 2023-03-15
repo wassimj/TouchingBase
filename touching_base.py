@@ -184,7 +184,7 @@ if ifc_file:
             if (optionA and optionB) and (not optionA == optionB):
                 topologyA = Topology.Filter(topologies, topologyType='cell', searchType='any', key="IFC_name", value=optionA)[0]
                 topologyB = Topology.Filter(topologies, topologyType='cell', searchType='any', key="IFC_name", value=optionB)[0]
-                temp = Topology.Boolean(newTopologies[i], newTopologies[j], operation="merge")
+                temp = Topology.Boolean(topologies[i], topologies[j], operation="merge")
                 condition = "unknown"
                 if isinstance(temp, topologic.CellComplex):
                     temp_cells = Topology.Cells(temp)
