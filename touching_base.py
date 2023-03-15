@@ -125,6 +125,7 @@ if not ifc_file:
     ifc_file = st.file_uploader(label="IFC File Uploader", type="ifc", accept_multiple_files=False)
     st.session_state['ifc_file'] = ifc_file
 topologies = st.session_state['topologies']
+options = []
 if ifc_file:
     #topologies = Topology.ByImportedIFC(ifc_file, transferDictionaries=True)
     if not topologies:
@@ -140,6 +141,7 @@ if ifc_file:
                         name = Dictionary.ValueAtKey(d, "IFC_name")
                         name = name+"_part_"+str(i+1)
                         d2 = Dictionary.SetValueAtKey(d, "IFC_name", name)
+                        options.append(name)
                         cell = Topology.SetDictionary(cell, d2)
                         newTopologies.append(cell)
             else:
@@ -147,6 +149,7 @@ if ifc_file:
                 newTopologies.append(newTopology)
         topologies = newTopologies
         st.session_state['topologies'] = topologies
+        st.session_state['options'] = options
 
     csv = st.session_state['csv']
     if not csv:
@@ -176,7 +179,6 @@ if ifc_file:
                 t_d = Topology.Dictionary(topologies[i])
                 t_name = Dictionary.ValueAtKey(t_d,"IFC_name")
                 t_id = Dictionary.ValueAtKey(t_d,"IFC_id")
-                options.append(t_name)
                 for j in range(len(topologies)):
                     if used[i][j] == 0 and (not i==j):
                         k_d = Topology.Dictionary(topologies[j])
@@ -188,7 +190,6 @@ if ifc_file:
                         used[i][j] = 1
                         used[j][i] = 1
             st.session_state['csv'] = csv
-            st.session_state['options'] = options
     
     #st.dataframe(data=csv)
     csv_string = convertToCSVString(csv)
