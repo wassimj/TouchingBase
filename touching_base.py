@@ -1,6 +1,7 @@
 import streamlit as st
 import topologicpy
 import topologic
+from topologicpy.CellComplex import CellComplex
 from topologicpy.Cluster import Cluster
 from topologicpy.Topology import Topology
 from topologicpy.Plotly import Plotly
