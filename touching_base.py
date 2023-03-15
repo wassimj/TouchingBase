@@ -38,6 +38,9 @@ def topologiesByIFCFile(ifc_file, transferDictionaries=True):
                 while True:
                     shape = iterator.get()
                     brep = shape.geometry.brep_data
+                    if i == 0:
+                        st.write(brep)
+                        i = 1
                     if brep:
                         try:
                             topology = Topology.ByString(brep)
