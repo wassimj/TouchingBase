@@ -67,12 +67,12 @@ def topologiesByIFCFile(ifc_file, transferDictionaries=True):
         settings.set(settings.EXCLUDE_SOLIDS_AND_SURFACES, True)
         products = ifc_file.by_type('IfcProduct')
         st.write("Found", str(len(products)), "IFC products")
-        if len(products) > 100:
-            st.write("WARNING, can only convert a maximum of 100 IFC products")
-            products = products[:100]
+        if len(products) > 50:
+            st.write("WARNING, can only convert a maximum of 50 IFC products")
+            products = products[:50]
         text="Converting to Topologies"
         conv_bar = st.progress(0, text=text)
-        for i, product in enumerate(products[:500]):
+        for i, product in enumerate(products[:50]):
             conv_bar.progress(int(float(i)/float(len(products))*100.0), text=text)
             try:
                 shape = ifcopenshell.geom.create_shape(settings, product)
@@ -213,7 +213,10 @@ if ifc_file:
             st.write("Topology B: ", name)
             if topologyA and topologyB:
                 condition = adjacency(topologyA, topologyB)
-                st.write(condition)
+                if condition == "touching":
+                    st.success(condition, icon="🙏")
+                else:
+                    st.info(condition, icon="ℹ️")
                 if show:
                     if not isolate:
                         cluster = Cluster.ByTopologies(topologies)
