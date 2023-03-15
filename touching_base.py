@@ -120,13 +120,17 @@ if ifc_file:
     counter = 1
     csv = []
     condition = "Unknown"
+    options = []
     for i in range(len(newTopologies)):
         t_d = Topology.Dictionary(newTopologies[i])
         t_name = Dictionary.ValueAtKey(t_d,"IFC_name")
+        t_id = Dictionary.ValueAtKey(t_d,"IFC_id")
+        options.append(t_id)
         for j in range(len(newTopologies)):
             if used[i][j] == 0 and (not i==j):
                 k_d = Topology.Dictionary(newTopologies[j])
                 k_name = Dictionary.ValueAtKey(k_d,"IFC_name")
+                k_id = Dictionary.ValueAtKey(k_d,"IFC_id")
                 temp = Topology.Boolean(bbList[i], bbList[j], operation="merge")
                 if isinstance(temp, topologic.CellComplex):
                     temp = Topology.Boolean(newTopologies[i], newTopologies[j], operation="merge")
@@ -147,3 +151,22 @@ if ifc_file:
     #st.dataframe(data=csv)
     csv_string = convertToCSVString(csv)
     st.download_button("Download CSV", csv_string, "adjacency.csv", "text/csv", key='download-csv')
+    optionA = st.selectbox("objectA", options)
+    optionB = st.selectbox("objectA", options)
+    if optionA and optionB:
+        topologyA = Topology.Filter(topologies, topologyType='cell', searchType='any', key="IFC_id", value=optionA)[0]
+        topologyB = Topology.Filter(topologies, topologyType='cell', searchType='any', key="IFC_id", value=optionA)[0]
+        temp = Topology.Boolean(newTopologies[i], newTopologies[j], operation="merge")
+        condition = "unknown"
+        if isinstance(temp, topologic.CellComplex):
+            temp_cells = Topology.Cells(temp)
+            if len(temp_cells) == 2:
+                condition = "touching"
+            elif len(temp_cells) > 2:
+                condition = "overlapping"
+        else:
+            condition = "separated"
+        st.write(condition)
+        data = Plotly.DataByTopology(temp)
+        fig = Plotly.FigureByData(data)
+        st.plotly_chart(fig, use_container_width=True)
