@@ -40,6 +40,8 @@ def topologiesByIFCFile(ifc_file, transferDictionaries=True):
                     brep = shape.geometry.brep_data
                     if i == 0:
                         st.write(brep)
+                        topology = Topology.ByString(brep)
+                        st.write(topology)
                         i = 1
                     if brep:
                         try:
