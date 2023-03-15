@@ -192,9 +192,13 @@ if ifc_file:
     if submitted:
         if (optionA and optionB) and (not optionA == optionB):
             topologyA = topologies[options.index(optionA)]
-            st.write("Topology A: ", topologyA)
+            d = Topology.Dictionary(topologyA)
+            name = Dictionary.ValueAtKey(d, "IFC_name")
+            st.write("Topology A: ", name)
             topologyB = topologies[options.index(optionB)]
-            st.write("Topology B: ", topologyB)
+            d = Topology.Dictionary(topologyB)
+            name = Dictionary.ValueAtKey(d, "IFC_name")
+            st.write("Topology B: ", name)
             if topologyA and topologyB:
                 condition = condition(topologyA, topologyB)
                 st.write(condition)
