@@ -25,64 +25,64 @@ def topologiesByIFCFile(ifc_file, transferDictionaries=True):
             f.write(ifc_file.getbuffer())
             st.write(f.name)
             ifc_file = ifcopenshell.open(f.name)
-            st.write("IFC File:", ifc_file)
-            topologies = []
-            settings = ifcopenshell.geom.settings()
-            settings.set(settings.DISABLE_TRIANGULATION, True)
-            settings.set(settings.USE_BREP_DATA, True)
-            settings.set(settings.USE_WORLD_COORDS, True)
-            settings.set(settings.SEW_SHELLS, True)
-            iterator = ifcopenshell.geom.iterator(settings, ifc_file, multiprocessing.cpu_count())
-            geometries = ifc_file.by_type("IfcProduct")
-            st.write(geometries[0])
-            brep = geometries[0].geometry.brep_data
-            st.write(brep)
-            if iterator.initialize():
-                i = 0
-                while True:
-                    shape = iterator.get()
-                    
+        st.write("IFC File:", ifc_file)
+        topologies = []
+        settings = ifcopenshell.geom.settings()
+        settings.set(settings.DISABLE_TRIANGULATION, True)
+        settings.set(settings.USE_BREP_DATA, True)
+        settings.set(settings.USE_WORLD_COORDS, True)
+        settings.set(settings.SEW_SHELLS, True)
+        iterator = ifcopenshell.geom.iterator(settings, ifc_file, multiprocessing.cpu_count())
+        products = ifc_file.by_type('IfcProduct')
+        print("Found Products:", len(products))
+        for product in products:
+            print(product.is_a())
+        if iterator.initialize():
+            i = 0
+            while True:
+                shape = iterator.get()
+                
+                try:
+                    brep = element.geometry.brep_data
+                except:
+                    brep = None
+                if i == 0:
+                    st.write(brep)
+                    topology = Topology.ByString(brep)
+                    st.write(topology)
+                    i = 1
+                if brep:
                     try:
-                        brep = element.geometry.brep_data
-                    except:
-                        brep = None
-                    if i == 0:
-                        st.write(brep)
                         topology = Topology.ByString(brep)
-                        st.write(topology)
-                        i = 1
-                    if brep:
-                        try:
-                            topology = Topology.ByString(brep)
-                        except:
-                            topology = None
-                    if topology:
-                        if transferDictionaries:
-                                keys = []
-                                values = []
-                                keys.append("TOPOLOGIC_color")
-                                values.append([1.0,1.0,1.0,1.0])
-                                keys.append("TOPOLOGIC_id")
-                                values.append(str(uuid.uuid4()))
-                                keys.append("TOPOLOGIC_name")
-                                values.append(shape.name)
-                                keys.append("TOPOLOGIC_type")
-                                values.append(Topology.TypeAsString(topology))
-                                keys.append("IFC_id")
-                                values.append(str(shape.id))
-                                keys.append("IFC_guid")
-                                values.append(str(shape.guid))
-                                keys.append("IFC_unique_id")
-                                values.append(str(shape.unique_id))
-                                keys.append("IFC_name")
-                                values.append(shape.name)
-                                keys.append("IFC_type")
-                                values.append(shape.type)
-                                d = Dictionary.ByKeysValues(keys, values)
-                                topology = Topology.SetDictionary(topology, d)
-                        topologies.append(topology)
-                    if not iterator.next():
-                        break
+                    except:
+                        topology = None
+                if topology:
+                    if transferDictionaries:
+                            keys = []
+                            values = []
+                            keys.append("TOPOLOGIC_color")
+                            values.append([1.0,1.0,1.0,1.0])
+                            keys.append("TOPOLOGIC_id")
+                            values.append(str(uuid.uuid4()))
+                            keys.append("TOPOLOGIC_name")
+                            values.append(shape.name)
+                            keys.append("TOPOLOGIC_type")
+                            values.append(Topology.TypeAsString(topology))
+                            keys.append("IFC_id")
+                            values.append(str(shape.id))
+                            keys.append("IFC_guid")
+                            values.append(str(shape.guid))
+                            keys.append("IFC_unique_id")
+                            values.append(str(shape.unique_id))
+                            keys.append("IFC_name")
+                            values.append(shape.name)
+                            keys.append("IFC_type")
+                            values.append(shape.type)
+                            d = Dictionary.ByKeysValues(keys, values)
+                            topology = Topology.SetDictionary(topology, d)
+                    topologies.append(topology)
+                if not iterator.next():
+                    break
     st.write("Found", len(topologies), "Topologies")
     return topologies
 
