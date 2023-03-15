@@ -92,6 +92,8 @@ if 'topologies' not in st.session_state:
     st.session_state['topologies'] = None
 if 'csv' not in st.session_state:
     st.session_state['csv'] = None
+if 'options' not in st.session_state:
+    st.session_state['options'] = None
 
 ifc_file = st.session_state['ifc_file']
 if not ifc_file:
@@ -167,10 +169,12 @@ if ifc_file:
                     counter = counter + 1
                     used[i][j] = 1
                     used[j][i] = 1
-        st.session_state['csv'] = csv#
+        st.session_state['csv'] = csv
+        st.session_state['options'] = options
     
     #st.dataframe(data=csv)
     csv_string = convertToCSVString(csv)
+    options = st.session_state['options']
     st.download_button("Download CSV", csv_string, "adjacency.csv", "text/csv", key='download-csv')
     with st.form("my_form"):
         optionA = st.selectbox("objectA", options=options, index=0, key=1)
