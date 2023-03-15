@@ -35,7 +35,7 @@ def topologiesByIFCFile(ifc_file, transferDictionaries=True):
         st.write("Found Products:", len(products))
         for product in products:
             st.write(product.is_a())
-            brep = product.geometry.brep_data
+            brep = product.brep_data
             if brep:
                 st.write(brep[:100])
         iterator = ifcopenshell.geom.iterator(settings, ifc_file, multiprocessing.cpu_count())
