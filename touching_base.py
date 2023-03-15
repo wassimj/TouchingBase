@@ -44,6 +44,7 @@ def topologiesByIFCFile(ifc_file, transferDictionaries=True):
                 st.write("Faces", len(faces))
                 st.write("Vertices", len(vertices))
                 topology = Topology.ByGeometry(vertices=vertices, faces=faces)
+                st.write("Created topology", topology)
             except:
                 topology = None
             if topology:
