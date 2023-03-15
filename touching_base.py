@@ -17,8 +17,11 @@ st.title('Touching Base')
 
 def topologiesByIFCFile(ifc_file, transferDictionaries=True):
     st.write(ifc_file.name)
-    ifc_file = ifcopenshell.open(ifc_file.name)
-    st.write(ifc_file)
+    from tempfile import NamedTemporaryFile
+    ifc_file = st.file_uploader("File upload", type='ifc')
+    with NamedTemporaryFile(dir='.', suffix='.ifc') as f:
+        f.write(ifc_file.getbuffer())
+        ifc_file = ifcopenshell.open(f.name)
     topologies = []
     settings = ifcopenshell.geom.settings()
     settings.set(settings.DISABLE_TRIANGULATION, True)
