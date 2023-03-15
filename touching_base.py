@@ -22,6 +22,8 @@ def topologiesByIFCFile(ifc_file, transferDictionaries=True):
         with NamedTemporaryFile(dir='.', suffix='.ifc') as f:
             f.write(uploaded_file.getbuffer())
             st.write(f.name)
+            ifc_file = ifcopenshell.open(f.name)
+            st.write("IFC File:", ifc_file)
             return
     from tempfile import NamedTemporaryFile
     with NamedTemporaryFile(dir='.', suffix='.ifc') as f:
