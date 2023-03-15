@@ -191,8 +191,6 @@ if ifc_file:
             topologyB = topologies[options.index(optionB)]
             if topologyA and topologyB:
                 temp = Topology.SelfMerge(Topology.Boolean(topologyA, topologyB, operation="merge"))
-                st.write(temp)
-                st.write(Topology.CellComplexes(temp))
                 if not temp:
                     condition = "unknown"
                 else:
