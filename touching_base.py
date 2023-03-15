@@ -14,7 +14,6 @@ st.title('Touching Base')
 
 def topologiesByIFCFile(ifc_file, transferDictionaries=True):
     ifc_file = ifc_file.getvalue().decode('utf-8')
-    st.write(ifc_file)
     topologies = []
     settings = ifcopenshell.geom.settings()
     settings.set(settings.DISABLE_TRIANGULATION, True)
@@ -24,6 +23,7 @@ def topologiesByIFCFile(ifc_file, transferDictionaries=True):
     iterator = ifcopenshell.geom.iterator(settings, ifc_file, multiprocessing.cpu_count())
     if iterator.initialize():
         while True:
+            st.write("Reading entity")
             shape = iterator.get()
             brep = shape.geometry.brep_data
             topology = Topology.ByString(brep)
