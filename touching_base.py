@@ -16,7 +16,6 @@ st.title('Touching Base')
 
 
 def topologiesByIFCFile(ifc_file, transferDictionaries=True):
-    st.write(ifc_file.name)
     topologies = []
     topology = None
     if ifc_file:
@@ -33,9 +32,12 @@ def topologiesByIFCFile(ifc_file, transferDictionaries=True):
         settings.set(settings.USE_WORLD_COORDS, True)
         settings.set(settings.SEW_SHELLS, True)
         products = ifc_file.by_type('IfcProduct')
-        print("Found Products:", len(products))
+        st.write("Found Products:", len(products))
         for product in products:
-            print(product.is_a())
+            st.write(product.is_a())
+            brep = product.geometry.brep_data
+            if brep:
+                st.write(brep[:100])
         iterator = ifcopenshell.geom.iterator(settings, ifc_file, multiprocessing.cpu_count())
         if iterator.initialize():
             i = 0
