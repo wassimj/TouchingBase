@@ -14,6 +14,15 @@ import pathlib
 
 st.title('Touching Base')
 
+def convertToCSVString(csv):
+    csv_string = ""
+    i = 0
+    for i, line in enumerate(csv):
+        for item in line:
+            csv_string = csv_string+item+","
+        if not i == len(csv)-1:
+            csv_string = csv_string+"\n"
+    return csv_string
 
 def topologiesByIFCFile(ifc_file, transferDictionaries=True):
     topologies = []
@@ -135,4 +144,6 @@ if ifc_file:
                 counter = counter + 1
                 used[i][j] = 1
                 used[j][i] = 1
-    st.dataframe(data=csv)
+    #st.dataframe(data=csv)
+    csv_string = convertToCSVString(csv)
+    st.download_button("Download CSV", csv_string, "adjacency.csv", "text/csv", key='download-csv')
