@@ -199,8 +199,8 @@ if ifc_file:
         optionB = st.selectbox("objectB", options=options, index=0, key=2)
         show = st.checkbox("show", value=False)
         isolate = st.checkbox("isolate", value=True)
-        submitted = st.form_submit_button("Submit")
-    if submitted:
+        submitted2 = st.form_submit_button("Submit")
+    if submitted2:
         if (optionA and optionB) and (not optionA == optionB):
             topologyA = topologies[options.index(optionA)]
             d = Topology.Dictionary(topologyA)
