@@ -200,9 +200,6 @@ if ifc_file:
                     else:
                         condition = "separated"
                     st.write(condition)
-                    st.write(temp)
                     data = Plotly.DataByTopology(temp)
-                    st.write(data)
                     fig = Plotly.FigureByData(data)
-                    st.write(fig)
                     st.plotly_chart(fig)
