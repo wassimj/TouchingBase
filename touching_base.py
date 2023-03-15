@@ -209,3 +209,6 @@ if ifc_file:
                         dataB = Plotly.DataByTopology(topologyB, faceOpacity=1, faceColor="blue", showEdges=False, showVertices=False, faceLabel=optionB)
                         fig = Plotly.FigureByData(data00+dataA+dataB)
                         st.plotly_chart(fig)
+                        if st.button('RESET'):
+                            ifc_file = None
+                            st.session_state['ifc_file'] = None
