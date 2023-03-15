@@ -14,6 +14,28 @@ import pathlib
 
 st.title('Touching Base')
 
+def condition(topologyA, topologyB):
+    bbA = Topology.BoundingBox(topologyA)
+    bbB = Topology.BoundingBox(topologyB)
+    result1 = Topology.Boolean(bbA, bbA, operation="intersect")
+    if not result1:
+        return "separated"
+    result2 = Topology.Boolean(topologyA, topologyB, operation="intersect")
+    if not result2:
+        return "separated"
+    result3 = Topology.Boolean(topologyA, topologyB, operation="merge")
+    if isinstance(result3, topologic.CellComplex):
+        cells = CellComplex.Cells(result3)
+        if len(cells) == 2:
+            return "touching"
+        elif len(cells) > 2:
+            return "overlapping"
+    
+    result4 = Topology.Boolean(topologyA, topologyB, operation="intersect")
+    if not result3:
+        return "separated"
+    return "overlapping"
+
 def convertToCSVString(csv):
     csv_string = ""
     i = 0
@@ -135,9 +157,6 @@ if ifc_file:
                 row.append(0)
             used.append(row)
 
-        bbList = []
-        for topology in topologies:
-            bbList.append(Topology.BoundingBox(topology))
         counter = 1
         csv = []
         condition = "Unknown"
@@ -152,22 +171,7 @@ if ifc_file:
                     k_d = Topology.Dictionary(topologies[j])
                     k_name = Dictionary.ValueAtKey(k_d,"IFC_name")
                     k_id = Dictionary.ValueAtKey(k_d,"IFC_id")
-                    temp = Topology.Boolean(bbList[i], bbList[j], operation="merge")
-                    if isinstance(temp, topologic.CellComplex):
-                        temp = Topology.SelfMerge(Topology.Boolean(topologies[i], topologies[j], operation="merge"))
-                        if isinstance(temp, topologic.CellComplex):
-                            temp_cells = Topology.Cells(temp)
-                            if len(temp_cells) == 2:
-                                condition = "touching"
-                            elif len(temp_cells) > 2:
-                                condition = "overlapping"
-                        elif isinstance(temp, topologic.Cluster):
-                            if len(Topology.CellComplexes(temp)) > 0:
-                                condition = "overlapping"
-                            else:
-                                condition = "separated"
-                        else:
-                            condition = "separated"
+                    condition = condition(topologies[i], topologies[j])
                     csv.append([str(counter),t_name,k_name,condition])
                     counter = counter + 1
                     used[i][j] = 1
@@ -192,43 +196,19 @@ if ifc_file:
             topologyB = topologies[options.index(optionB)]
             st.write("Topology B: ", topologyB)
             if topologyA and topologyB:
-                temp = Topology.Boolean(topologyA, topologyB, operation="intersect")
-                st.write("Result", temp)
-                condition = "unknown"
-                if not temp:
-                    condition = "separated"
-                else:
-                    if isinstance(temp, topologic.CellComplex):
-                        st.write("The object is a CellComplex")
-                        temp_cells = Topology.Cells(temp)
-                        if len(temp_cells) == 2:
-                            st.write("The CellComplex has 2 cells")
-                            condition = "touching"
-                        elif len(temp_cells) > 2:
-                            st.write("The CellComplex has", str(len(temp_cells)),"cells")
-                            condition = "overlapping"
-                    elif isinstance(temp, topologic.Cluster):
-                        st.write("The object is a Cluster")
-
-                        if len(Topology.CellComplexes(temp)) > 0:
-                            st.write("The Cluster has", str(len(Topology.CellComplexes(temp))), "CellComplexes")
-                            condition = "overlapping"
-                        else:
-                            condition = "separated"
+                condition = condition(topologyA, topologyB)
+                st.write(condition)
+                if show:
+                    if not isolate:
+                        cluster = Cluster.ByTopologies(topologies)
+                        data00 = Plotly.DataByTopology(cluster, showFaces=False, edgeColor="lightgray", vertexColor="lightgray", edgeLabel="", vertexLabel="", showEdgeLegend=False, showVertexLegend=False)
                     else:
-                        condition = "separated"
-                    st.write(condition)
-                    if show:
-                        if not isolate:
-                            cluster = Cluster.ByTopologies(topologies)
-                            data00 = Plotly.DataByTopology(cluster, showFaces=False, edgeColor="lightgray", vertexColor="lightgray", edgeLabel="", vertexLabel="", showEdgeLegend=False, showVertexLegend=False)
-                        else:
-                            data00 = []
-                        
-                        dataA = Plotly.DataByTopology(topologyA, faceOpacity=1, faceColor="red", showEdges=False, showVertices=False, faceLabel=optionA)
-                        dataB = Plotly.DataByTopology(topologyB, faceOpacity=1, faceColor="blue", showEdges=False, showVertices=False, faceLabel=optionB)
-                        fig = Plotly.FigureByData(data00+dataA+dataB)
-                        st.plotly_chart(fig)
-                        if st.button('RESET'):
-                            ifc_file = None
-                            st.session_state['ifc_file'] = None
+                        data00 = []
+                    
+                    dataA = Plotly.DataByTopology(topologyA, faceOpacity=1, faceColor="red", showEdges=False, showVertices=False, faceLabel=optionA)
+                    dataB = Plotly.DataByTopology(topologyB, faceOpacity=1, faceColor="blue", showEdges=False, showVertices=False, faceLabel=optionB)
+                    fig = Plotly.FigureByData(data00+dataA+dataB)
+                    st.plotly_chart(fig)
+                    if st.button('RESET'):
+                        ifc_file = None
+                        st.session_state['ifc_file'] = None
