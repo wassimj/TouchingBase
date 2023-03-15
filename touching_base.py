@@ -192,7 +192,7 @@ if ifc_file:
             topologyB = topologies[options.index(optionB)]
             st.write("Topology B: ", topologyB)
             if topologyA and topologyB:
-                temp = Cluster.SelfMerge(Topology.Boolean(topologyA, topologyB, operation="intersect"))
+                temp = Topology.Boolean(topologyA, topologyB, operation="intersect")
                 st.write("Result", temp)
                 condition = "unknown"
                 if not temp:
