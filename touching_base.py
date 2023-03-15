@@ -206,6 +206,6 @@ if ifc_file:
                             data00 = []
                         
                         dataA = Plotly.DataByTopology(topologyA, faceOpacity=1, faceColor="red", showEdges=False, showVertices=False, faceLabel=optionA)
-                        dataB = Plotly.DataByTopology(topologyB, faceOpacity=1, faceColor="blue"showEdges=False, showVertices=False, faceLabel=optionB)
+                        dataB = Plotly.DataByTopology(topologyB, faceOpacity=1, faceColor="blue", showEdges=False, showVertices=False, faceLabel=optionB)
                         fig = Plotly.FigureByData(data00+dataA+dataB)
                         st.plotly_chart(fig)
