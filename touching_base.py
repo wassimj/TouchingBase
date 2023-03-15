@@ -196,7 +196,7 @@ if ifc_file:
                 st.write("Result", temp)
                 condition = "unknown"
                 if not temp:
-                    condition = "unknown"
+                    condition = "separated"
                 else:
                     if isinstance(temp, topologic.CellComplex):
                         st.write("The object is a CellComplex")
