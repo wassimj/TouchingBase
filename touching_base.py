@@ -33,11 +33,15 @@ def topologiesByIFCFile(ifc_file, transferDictionaries=True):
             settings.set(settings.USE_WORLD_COORDS, True)
             settings.set(settings.SEW_SHELLS, True)
             iterator = ifcopenshell.geom.iterator(settings, ifc_file, multiprocessing.cpu_count())
+            geometries = ifc_file.by_type("IfcProduct")
+            st.write(geometries[0])
+            brep = geometries[0].geometry.brep_data
+            st.write(brep)
             if iterator.initialize():
                 i = 0
                 while True:
                     shape = iterator.get()
-                    element = ifc_file.by_guid(shape.guid)
+                    
                     try:
                         brep = element.geometry.brep_data
                     except:
