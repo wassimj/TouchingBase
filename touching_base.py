@@ -37,16 +37,13 @@ def topologiesByIFCFile(ifc_file, transferDictionaries=True):
         st.write("Found Products:", len(products))
         for product in products:
             st.write(product.is_a())
-            try:
-                shape = ifcopenshell.geom.create_shape(settings, product)
-                faces = shape.geometry.faces
-                vertices = shape.geometry.verts
-                st.write("Faces", len(faces))
-                st.write("Vertices", len(vertices))
-                topology = Topology.ByGeometry(vertices=vertices, faces=faces)
-                st.write("Created topology", topology)
-            except:
-                topology = None
+            shape = ifcopenshell.geom.create_shape(settings, product)
+            faces = shape.geometry.faces
+            vertices = shape.geometry.verts
+            st.write("   Faces", len(faces))
+            st.write("   Vertices", len(vertices))
+            topology = Topology.ByGeometry(vertices=vertices, faces=faces)
+            st.write("   Created topology", topology)
             if topology:
                 if transferDictionaries:
                     keys = []
