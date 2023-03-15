@@ -73,7 +73,7 @@ def topologiesByIFCFile(ifc_file, transferDictionaries=True):
     st.write("Found", len(topologies), "Topologies")
     return topologies
 
-ifc_file = st.file_uploader("", type="ifc", accept_multiple_files=False, label="File Uploader 01")
+ifc_file = st.file_uploader(label="uploader01", type="ifc", accept_multiple_files=False)
 if ifc_file:
     #topologies = Topology.ByImportedIFC(ifc_file, transferDictionaries=True)
     topologies = topologiesByIFCFile(ifc_file, transferDictionaries=True)
