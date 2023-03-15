@@ -188,7 +188,7 @@ if ifc_file:
         optionA = st.selectbox("objectA", options=options, index=0, key=1)
         optionB = st.selectbox("objectB", options=options, index=0, key=2)
         show = st.checkbox("show", value=False)
-        isolate = st.checkbox("isolate", value=False)
+        isolate = st.checkbox("isolate", value=True)
         submitted = st.form_submit_button("Submit")
     if submitted:
         if (optionA and optionB) and (not optionA == optionB):
