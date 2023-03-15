@@ -16,6 +16,7 @@ st.title('Touching Base')
 
 
 def topologiesByIFCFile(ifc_file, transferDictionaries=True):
+    st.write(ifc_file.name)
     ifc_file = ifcopenshell.open(ifc_file.name)
     st.write(ifc_file)
     topologies = []
