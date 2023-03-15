@@ -35,56 +35,34 @@ def topologiesByIFCFile(ifc_file, transferDictionaries=True):
         st.write("Found Products:", len(products))
         for product in products:
             st.write(product.is_a())
-            brep = product.brep_data
-            if brep:
-                st.write(brep[:100])
-        iterator = ifcopenshell.geom.iterator(settings, ifc_file, multiprocessing.cpu_count())
-        if iterator.initialize():
-            i = 0
-            while True:
-                shape = iterator.get()
-                
-                try:
-                    brep = element.geometry.brep_data
-                except:
-                    brep = None
-                if i == 0:
-                    st.write(brep)
-                    topology = Topology.ByString(brep)
-                    st.write(topology)
-                    i = 1
-                if brep:
-                    try:
-                        topology = Topology.ByString(brep)
-                    except:
-                        topology = None
-                if topology:
-                    if transferDictionaries:
-                            keys = []
-                            values = []
-                            keys.append("TOPOLOGIC_color")
-                            values.append([1.0,1.0,1.0,1.0])
-                            keys.append("TOPOLOGIC_id")
-                            values.append(str(uuid.uuid4()))
-                            keys.append("TOPOLOGIC_name")
-                            values.append(shape.name)
-                            keys.append("TOPOLOGIC_type")
-                            values.append(Topology.TypeAsString(topology))
-                            keys.append("IFC_id")
-                            values.append(str(shape.id))
-                            keys.append("IFC_guid")
-                            values.append(str(shape.guid))
-                            keys.append("IFC_unique_id")
-                            values.append(str(shape.unique_id))
-                            keys.append("IFC_name")
-                            values.append(shape.name)
-                            keys.append("IFC_type")
-                            values.append(shape.type)
-                            d = Dictionary.ByKeysValues(keys, values)
-                            topology = Topology.SetDictionary(topology, d)
-                    topologies.append(topology)
-                if not iterator.next():
-                    break
+            cr = ifcopenshell.geom.create_shape(settings, product)
+            brep = cr.geometry.brep_data
+            st.write(brep[:100])
+            if topology:
+                if transferDictionaries:
+                    keys = []
+                    values = []
+                    keys.append("TOPOLOGIC_color")
+                    values.append([1.0,1.0,1.0,1.0])
+                    keys.append("TOPOLOGIC_id")
+                    values.append(str(uuid.uuid4()))
+                    keys.append("TOPOLOGIC_name")
+                    values.append(shape.name)
+                    keys.append("TOPOLOGIC_type")
+                    values.append(Topology.TypeAsString(topology))
+                    keys.append("IFC_id")
+                    values.append(str(shape.id))
+                    keys.append("IFC_guid")
+                    values.append(str(shape.guid))
+                    keys.append("IFC_unique_id")
+                    values.append(str(shape.unique_id))
+                    keys.append("IFC_name")
+                    values.append(shape.name)
+                    keys.append("IFC_type")
+                    values.append(shape.type)
+                    d = Dictionary.ByKeysValues(keys, values)
+                    topology = Topology.SetDictionary(topology, d)
+                topologies.append(topology)
     st.write("Found", len(topologies), "Topologies")
     return topologies
 
