@@ -182,20 +182,23 @@ if ifc_file:
         if (optionA and optionB) and (not optionA == optionB):
             topologyA = Topology.Filter(topologies, topologyType='cell', searchType='any', key="IFC_name", value=optionA)[0]
             topologyB = Topology.Filter(topologies, topologyType='cell', searchType='any', key="IFC_name", value=optionB)[0]
-            temp = Topology.Boolean(topologyA, topologyB, operation="merge")
-            condition = "unknown"
-            if isinstance(temp, topologic.CellComplex):
-                temp_cells = Topology.Cells(temp)
-                if len(temp_cells) == 2:
-                    condition = "touching"
-                elif len(temp_cells) > 2:
-                    condition = "overlapping"
-            else:
-                condition = "separated"
-            st.write(condition)
-            st.write(temp)
-            data = Plotly.DataByTopology(temp)
-            st.write(data)
-            fig = Plotly.FigureByData(data)
-            st.write(fig)
-            st.plotly_chart(fig)
+            if topologyA and topologyB:
+                temp = Topology.Boolean(topologyA, topologyB, operation="merge")
+                if not temp:
+                    condition = "unknown"
+                else:
+                    if isinstance(temp, topologic.CellComplex):
+                        temp_cells = Topology.Cells(temp)
+                        if len(temp_cells) == 2:
+                            condition = "touching"
+                        elif len(temp_cells) > 2:
+                            condition = "overlapping"
+                    else:
+                        condition = "separated"
+                    st.write(condition)
+                    st.write(temp)
+                    data = Plotly.DataByTopology(temp)
+                    st.write(data)
+                    fig = Plotly.FigureByData(data)
+                    st.write(fig)
+                    st.plotly_chart(fig)
