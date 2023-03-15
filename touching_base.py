@@ -98,9 +98,6 @@ if not ifc_file:
     ifc_file = st.file_uploader(label="uploader01", type="ifc", accept_multiple_files=False)
     st.session_state['ifc_file'] = ifc_file
 topologies = st.session_state['topologies']
-if not ifc_file:
-    ifc_file = st.file_uploader(label="uploader01", type="ifc", accept_multiple_files=False)
-    st.session_state['ifc_file'] = ifc_file
 if ifc_file:
     #topologies = Topology.ByImportedIFC(ifc_file, transferDictionaries=True)
     if not topologies:
