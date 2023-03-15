@@ -151,8 +151,8 @@ if ifc_file:
     csv = st.session_state['csv']
     if not csv:
         with st.form("run_clas_detection"):
-        runall = st.checkbox("Detect All Clashes", value=False)
-        submitted = st.form_submit_button("Submit")
+            runall = st.checkbox("Detect All Clashes", value=False)
+            submitted = st.form_submit_button("Submit")
     if submitted:
         if runall:
             used = []
