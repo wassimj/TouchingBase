@@ -14,7 +14,7 @@ import pathlib
 
 st.title('Touching Base')
 
-def condition(topologyA, topologyB):
+def adjacency(topologyA, topologyB):
     bbA = Topology.BoundingBox(topologyA)
     bbB = Topology.BoundingBox(topologyB)
     result1 = Topology.Boolean(bbA, bbA, operation="intersect")
@@ -171,7 +171,7 @@ if ifc_file:
                     k_d = Topology.Dictionary(topologies[j])
                     k_name = Dictionary.ValueAtKey(k_d,"IFC_name")
                     k_id = Dictionary.ValueAtKey(k_d,"IFC_id")
-                    condition = condition(topologies[i], topologies[j])
+                    condition = adjacency(topologies[i], topologies[j])
                     csv.append([str(counter),t_name,k_name,condition])
                     counter = counter + 1
                     used[i][j] = 1
@@ -200,7 +200,7 @@ if ifc_file:
             name = Dictionary.ValueAtKey(d, "IFC_name")
             st.write("Topology B: ", name)
             if topologyA and topologyB:
-                condition = condition(topologyA, topologyB)
+                condition = adjacency(topologyA, topologyB)
                 st.write(condition)
                 if show:
                     if not isolate:
